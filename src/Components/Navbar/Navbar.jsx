@@ -1,19 +1,46 @@
-import React from "react";
-import { NavLink } from "react-router";
+import React, { use } from "react";
+import { Link, NavLink } from "react-router";
+import "./Navbar.css";
+import { AuthContext } from "../Contexts/AuthContext,jsx";
 
 const Navbar = () => {
+  const userInfo = use(AuthContext);
+  const { user, logoutUser } = userInfo;
+
+  const handleSignOut = () => {
+    logoutUser()
+      .then(() => console.log("Signout successful"))
+      .catch((error) => console.log(error));
+  };
+
   const links = (
     <>
       <li>
         <NavLink to="/">Home</NavLink>
       </li>
-
+      {!user && (
+        <>
+          <li>
+            <NavLink to="/login">Login</NavLink>
+          </li>
+          <li>
+            <NavLink to="/register">Register</NavLink>
+          </li>
+        </>
+      )}
       <li>
-        <NavLink to="/login">Login</NavLink>
+        <NavLink to="/dashboard">Dashboard</NavLink>
       </li>
-      <li>
-        <NavLink to="/register">Register</NavLink>
-      </li>
+      {user && (
+        <>
+          <li>
+            <NavLink to="/orders">Orders</NavLink>
+          </li>{" "}
+          <li>
+            <NavLink to="/profile">Profile</NavLink>
+          </li>
+        </>
+      )}
     </>
   );
   return (
@@ -50,7 +77,18 @@ const Navbar = () => {
         <ul className="menu menu-horizontal px-1">{links}</ul>
       </div>
       <div className="navbar-end">
-        <a className="btn">Button</a>
+        {user ? (
+          <>
+            <span>{user.email}</span>
+            <button className="btn" onClick={handleSignOut}>
+              Sign Out
+            </button>
+          </>
+        ) : (
+          <button className="btn">
+            <Link to="/login">Sign In</Link>
+          </button>
+        )}
       </div>
     </nav>
   );
